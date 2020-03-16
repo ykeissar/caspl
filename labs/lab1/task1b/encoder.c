@@ -2,18 +2,20 @@
 
 int main(int argc,char* argv[]){
     bool isDebug = flase;
-    if(argc > 1 && argv[1] == '-D')
+    if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'D'){
         isDebug = true;
-    int org, mod, i=0;
-    char[] str = fgets(stdin);
+        puts(argv[1]);
+    }
+    int org, mod;
     do{
-        org = str[i];
+        org = getc(stdin);
         mod = org;
         if(org >= 97 && org <= 122){
             mod = org - 32;
         }
-        printf("%d\t%d\n",org,mod);
-        i++;
+        if(isDebug)
+            fprintf(stderr,"%d\t%d\n",org,mod);
+        printf("%c",mod);
     } while(corg != EOF);
 	return 0;
 }
