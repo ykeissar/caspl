@@ -1,9 +1,9 @@
 #include<stdio.h> 
 
 int main(int argc,char* argv[]){
-    bool isDebug = flase;
+    int isDebug = 0;
     if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'D'){
-        isDebug = true;
+        isDebug = 1;
         puts(argv[1]);
     }
     int org, mod;
@@ -13,9 +13,9 @@ int main(int argc,char* argv[]){
         if(org >= 97 && org <= 122){
             mod = org - 32;
         }
-        if(isDebug)
+        if(isDebug && org != EOF)
             fprintf(stderr,"%d\t%d\n",org,mod);
         printf("%c",mod);
-    } while(corg != EOF);
+    } while(org != EOF);
 	return 0;
 }
