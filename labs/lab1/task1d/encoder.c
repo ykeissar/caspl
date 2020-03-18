@@ -16,8 +16,7 @@ int main(int argc,char* argv[]){
             recieveKey = 1;
             len = strlen(argv[1])-2;
             //than handle o
-            char* out = strncpy(argv[2]);
-            output = fopen(out,"w");
+            output = getAddress(argv[2]);
         }
         else{
             if(argv[1][1] == 'e'){
@@ -27,10 +26,8 @@ int main(int argc,char* argv[]){
                 recieveKey = 1;
                 len = strlen(argv[1])-2; 
             }
-            else {
-                char* out = argv[2];
-                output = fopen(out,"w");
-            }
+            else 
+                output = getAddress(argv[2]);
         }
     }
     
@@ -67,4 +64,11 @@ int main(int argc,char* argv[]){
         }
     } while(org != EOF);
 	return 0;
+}
+
+FILE * getAddress(char[] arg){
+    char out[strlen(arg)-2]
+    for(int i=0;i<out;i++)
+        out[i] = arg[i+2];
+    return fopen(out,"w");
 }
