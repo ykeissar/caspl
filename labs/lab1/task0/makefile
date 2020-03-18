@@ -5,4 +5,4 @@ my_echo.o: my_echo.c
 		gcc -m32 -g -Wall -c -o my_echo.o my_echo.c
 .PHONY: clean
 clean: 
-	rm -f *.o run
+	rm -f *.o my_echo
