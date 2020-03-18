@@ -1,6 +1,8 @@
 #include<stdio.h> 
 #include <string.h>
 
+FILE* getAddress(char* arg);
+
 int main(int argc,char* argv[]){
     int isAdd = 0, recieveKey = 0;
     int len=1;
@@ -27,7 +29,7 @@ int main(int argc,char* argv[]){
                 len = strlen(argv[1])-2; 
             }
             else 
-                output = getAddress(argv[2]);
+                output = getAddress(argv[1]);
         }
     }
     
@@ -66,9 +68,9 @@ int main(int argc,char* argv[]){
 	return 0;
 }
 
-FILE * getAddress(char[] arg){
-    char out[strlen(arg)-2]
-    for(int i=0;i<out;i++)
+FILE* getAddress(char* arg){
+    char out[strlen(arg)-2];
+    for(int i = 0;i < strlen(out);i++)
         out[i] = arg[i+2];
     return fopen(out,"w");
 }
