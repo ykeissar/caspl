@@ -4,8 +4,8 @@
 FILE* getAddress(char* arg);
 
 int main(int argc,char* argv[]){
-    int isAdd = 0, recieveKey = 0;
-    int len=1;
+    int isAdd = 0;
+    int len = 1;
     FILE *output = stdout;
     int enc = 0,outIndex = 0;
     if(argc > 1){
@@ -15,35 +15,32 @@ int main(int argc,char* argv[]){
             outIndex = 1;
         if(argc > 2){
             if(argv[2][1] == 'e')
-                outIndex = 2;
-            else
                 enc = 2;
+            else
+                outIndex = 2;
         }
     }
     
     if(enc > 0){
-        if(argv[enc][0] == '+'){
+        if(argv[enc][0] == '+')
                 isAdd = 1;
-            }
-        recieveKey = 1;
         len = strlen(argv[enc])-2;
     }
     if(outIndex > 0){
         output = getAddress(argv[outIndex]);
     }
-
     int org, mod, i = 0;
     int dif;
 
     do{
         org = getc(stdin);
         mod = org;
-        if(recieveKey == 0){
+        if(enc == 0){
             if(org >= 97 && org <= 122)
                 mod = org - 32;
         }
         else{ 
-            dif = argv[1][i+2];
+            dif = argv[enc][i+2];
             dif -= 48;
             if(isAdd){
                 mod = org + dif;
@@ -62,6 +59,7 @@ int main(int argc,char* argv[]){
         }
         else{
             fprintf(output,"%c",org);
+            i=0;
         }
     } while(org != EOF);
 	return 0;
