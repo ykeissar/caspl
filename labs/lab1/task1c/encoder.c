@@ -5,14 +5,14 @@ int main(int argc,char* argv[]){
     int isAdd = 0, recieveKey = 0, isDebug = 0;
     int len=1;
     for(int j=1;j<argc;j++){
-        if(argv[j][1] == 'e'){
-            recieveKey = 1;
-            if(argv[j][0] == '+')
-                isAdd = 1;
-            len = strlen(argv[j])-2;
-        }
-        if(argv[j][1] == 'D'){
-            if(strncmp(argv[j],"-D",2) == 0){
+        if(argv[j][0] == '-'){
+            if(argv[j][1] == 'e'){
+                recieveKey = 1;
+                if(argv[j][0] == '+')
+                    isAdd = 1;
+                len = strlen(argv[j])-2;
+            }
+            if(argv[j][1] == 'D'){
                 isDebug = 1;
                 puts(argv[j]);
             }

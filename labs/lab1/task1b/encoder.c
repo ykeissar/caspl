@@ -2,12 +2,16 @@
 
 int main(int argc,char* argv[]){
     int isDebug = 0;
+    
     for(int i=1;i<argc;i++){
-        if(strncmp(argv[i],"-D",2) == 0){
-            isDebug = 1;
-            puts(argv[i]);
+        if(argv[i][0] == '-'){
+            if(argv[i][1]== 'D'){
+                isDebug = 1;
+                puts(argv[i]);
+            }
         }
     }
+
     int org, mod;
     while(1){
         org = getc(stdin);

@@ -8,28 +8,28 @@ int main(int argc,char* argv[]){
     int enc = 0,inp = 0;
 
     for(int j=1;j<argc;j++){
-        if(argv[j][1] == 'e'){
-            enc = j;
-            recieveKey = 1;
-            if(argv[j][0] == '+')
-                isAdd = 1;
-            len = strlen(argv[j])-2;
-        }
-            
-        if(argv[j][1] == 'i'){
-            size_t inputSize = strlen(argv[j])-2 ;
-            char inPath[inputSize];
-        
-            for(int i = 0;i < strlen(inPath);i++)
-                inPath[i] = argv[j][i+2];
-            if((input=fopen(inPath,"r")) == NULL){
-                fprintf(stderr,"File '%s' does not exist!\n",inPath);
-                return 1;
+        if(argv[j][0] == '-'){
+            if(argv[j][1] == 'e'){
+                enc = j;
+                recieveKey = 1;
+                if(argv[j][0] == '+')
+                    isAdd = 1;
+                len = strlen(argv[j])-2;
             }
-        }
-        
-        if(argv[j][1] == 'D'){
-            if(strncmp(argv[j],"-D",2) == 0){
+                
+            if(argv[j][1] == 'i'){
+                size_t inputSize = strlen(argv[j])-2 ;
+                char inPath[inputSize];
+            
+                for(int i = 0;i < strlen(inPath);i++)
+                    inPath[i] = argv[j][i+2];
+                if((input=fopen(inPath,"r")) == NULL){
+                    fprintf(stderr,"File '%s' does not exist!\n",inPath);
+                    return 1;
+                }
+            }
+            
+            if(argv[j][1] == 'D'){
                 isDebug = 1;
                 puts(argv[j]);
             }
