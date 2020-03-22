@@ -2,18 +2,16 @@
 #include <string.h>
 
 int main(int argc,char* argv[]){
-    int isAdd = 0,recieveKey = 0,isDebug =0;
+    int isAdd = 0, isDebug =0;
     int len=1;
     FILE *input = stdin;
-    int enc = 0,inp = 0;
+    int enc = 0;
+    char* DEBUG_FLAG = "-D";
 
     for(int j=1;j<argc;j++){
         if(argv[j][0] == '-'){
             if(argv[j][1] == 'e'){
                 enc = j;
-                recieveKey = 1;
-                if(argv[j][0] == '+')
-                    isAdd = 1;
                 len = strlen(argv[j])-2;
             }
                 
@@ -29,10 +27,15 @@ int main(int argc,char* argv[]){
                 }
             }
             
-            if(argv[j][1] == 'D'){
+            if(strcmp(argv[j],DEBUG_FLAG) == 0){
                 isDebug = 1;
                 puts(argv[j]);
             }
+        }
+        if(argv[j][0] == '+' && argv[j][1] == 'e'){
+            enc = j;
+            isAdd = 1;
+            len = strlen(argv[j])-2;
         }
     }
 

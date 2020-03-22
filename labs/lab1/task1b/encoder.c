@@ -1,11 +1,12 @@
 #include<stdio.h> 
+#include <string.h>
 
 int main(int argc,char* argv[]){
     int isDebug = 0;
-    
-    for(int i=1;i<argc;i++){
+    char* DEBUG_FLAG = "-D";
+    for(int i = 1;i < argc;i++){
         if(argv[i][0] == '-'){
-            if(argv[i][1]== 'D'){
+            if(strcmp(argv[i],DEBUG_FLAG) == 0){
                 isDebug = 1;
                 puts(argv[i]);
             }
