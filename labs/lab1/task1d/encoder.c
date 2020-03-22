@@ -17,8 +17,9 @@ int main(int argc,char* argv[]){
                 len = strlen(argv[j])-2;
             }
                 
-            if(argv[j][1] == 'o')
+            if(argv[j][1] == 'o'){
                 output = getAddress(argv[j]);
+            }
             
             if(strcmp(argv[j],DEBUG_FLAG) == 0){
                 isDebug = 1;
@@ -77,12 +78,8 @@ int main(int argc,char* argv[]){
 }
 
 FILE* getAddress(char* arg){
-    int outputSize = sizeof(arg)-2 ;
-    printf("%d\n",outputSize);
-    char* out = "abcdefg";
-    printf("%d\n",strlen(out));
+    char out[strlen(arg)];
     for(int i = 0;i < strlen(out);i++)
         out[i] = arg[i+2];
-    printf("arg:%d,out:%d, %s\n",strlen(arg),strlen(out),out);
     return fopen(out,"w");
 }

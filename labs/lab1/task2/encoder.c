@@ -16,10 +16,9 @@ int main(int argc,char* argv[]){
             }
                 
             if(argv[j][1] == 'i'){
-                size_t inputSize = strlen(argv[j])-2 ;
-                char inPath[inputSize];
+                char inPath[strlen(argv[j])];
             
-                for(int i = 0;i < strlen(inPath);i++)
+                for(int i = 0;i < strlen(argv[j]);i++)
                     inPath[i] = argv[j][i+2];
                 if((input=fopen(inPath,"r")) == NULL){
                     fprintf(stderr,"File '%s' does not exist!\n",inPath);
