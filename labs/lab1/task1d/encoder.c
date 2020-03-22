@@ -4,38 +4,41 @@
 FILE* getAddress(char* arg);
 
 int main(int argc,char* argv[]){
-    int isAdd = 0;
+    int isAdd = 0,recieveKey = 0, isDebug = 0;
     int len = 1;
     FILE *output = stdout;
     int enc = 0,outIndex = 0;
-    if(argc > 1){
-        if(argv[1][1] == 'e')
-            enc = 1;
-        else
-            outIndex = 1;
-        if(argc > 2){
-            if(argv[2][1] == 'e')
-                enc = 2;
-            else
-                outIndex = 2;
+    for(int j=1;j<argc;j++){
+        if(argv[j][1] == 'e'){
+            enc = j;
+            recieveKey = 1;
+            if(argv[j][0] == '+')
+                isAdd = 1;
+            len = strlen(argv[j])-2;
+        }
+            
+        if(argv[j][1] == 'o')
+            output = getAddress(argv[j]);
+        
+        if(argv[j][1] == 'D'){
+            if(strncmp(argv[j],"-D",2) == 0){
+                isDebug = 1;
+                puts(argv[j]);
+            }
         }
     }
     
-    if(enc > 0){
-        if(argv[enc][0] == '+')
-                isAdd = 1;
-        len = strlen(argv[enc])-2;
-    }
-    if(outIndex > 0){
-        output = getAddress(argv[outIndex]);
-    }
     int org, mod, i = 0;
     int dif;
 
-    do{
+    while(1){
         org = getc(stdin);
         mod = org;
-        if(enc == 0){
+        if(org == EOF){
+            fprintf(output,"\n%c\n",org);
+            break;
+        }
+        if(recieveKey == 0){
             if(org >= 97 && org <= 122)
                 mod = org - 32;
         }
@@ -53,15 +56,18 @@ int main(int argc,char* argv[]){
             }
         }
         i++;
-        i = i % len;
-        if(org != 10 && org != -1){
+        i %= len;
+        if(isDebug)
+            fprintf(stderr,"%d\t%d\n",org,mod);
+        if(org != 10){
             fprintf(output,"%c",mod);
         }
         else{
             fprintf(output,"%c",org);
             i=0;
         }
-    } while(org != EOF);
+    }
+    fclose(output);
 	return 0;
 }
 
