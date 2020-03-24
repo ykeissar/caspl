@@ -1,85 +1,74 @@
-#include<stdio.h> 
+#include <stdio.h>
 #include <string.h>
 
-FILE* getAddress(char* arg);
-
 int main(int argc,char* argv[]){
-    int isAdd = 0,recieveKey = 0, isDebug = 0;
-    int len = 1;
-    FILE *output = stdout;
-    int enc = 0;
-    char* DEBUG_FLAG = "-D";
-    for(int j=1;j<argc;j++){
-        if(argv[j][0] == '-'){
-            if(argv[j][1] == 'e'){
-                enc = j;
-                recieveKey = 1;
-                len = strlen(argv[j])-2;
-            }
-                
-            if(argv[j][1] == 'o'){
-                output = getAddress(argv[j]);
-            }
-            
-            if(strcmp(argv[j],DEBUG_FLAG) == 0){
+    int org,mod,i,isDebug,isAdd = 0,encIndex = 0,keyIndex = 0,dif,keyLen = 0,j;
+    FILE* output = stdout;
+
+    for(i = 1;i < argc; i++){
+        if(argv[i][0] == '-'){
+            if(argv[i][1] == 'D' && strlen(argv[i]) == 2){
+                puts(argv[i]);
                 isDebug = 1;
-                puts(argv[j]);
+            }
+            if(argv[i][1] == 'e'){
+                encIndex = i;
+                keyLen = strlen(argv[i])-2;
+            }
+            if(argv[i][1] == 'o'){
+                char outputPath[strlen(argv[i])];
+                for(j = 0;j < strlen(outputPath);j++){
+                    outputPath[j] = argv[i][j+2];
+                }
+                output = fopen(outputPath,"w");  
             }
         }
-        if(argv[j][0] == '+' && argv[j][1] == 'e'){
-            enc = j;
-            isAdd = 1;
-            recieveKey = 1;
-            len = strlen(argv[j])-2;
-        }
+         if(argv[i][0] == '+'){
+             if(argv[i][1] == 'e'){
+                isAdd = 1;
+                encIndex = i;
+                keyLen = strlen(argv[i])-2;
+             }
+         }
     }
-    
-    int org, mod, i = 0;
-    int dif;
 
     while(1){
         org = getc(stdin);
         mod = org;
         if(org == EOF){
-            fprintf(output,"\n%c\n",org);
             break;
         }
-        if(recieveKey == 0){
-            if(org >= 97 && org <= 122)
+        if(encIndex == 0){
+            if(org >= 97 && org<= 122){
                 mod = org - 32;
+            }
         }
-        else{ 
-            dif = argv[enc][i+2];
-            dif -= 48;
-            if(isAdd){
+        else{
+            dif = argv[encIndex][keyIndex+2] - 48;
+            if(isAdd == 1){
                 mod = org + dif;
-                mod %= 255; 
+                mod %= 128;
             }
             else{
                 mod = org - dif;
-                if(mod < 0)
-                    mod += 255;  
+                if(mod < 0){
+                    mod += 128;
+                }
             }
+            keyIndex++;
+            keyIndex %= keyLen;
         }
-        i++;
-        i %= len;
-        if(isDebug)
-            fprintf(stderr,"%d\t%d\n",org,mod);
+
         if(org != 10){
-            fprintf(output,"%c",mod);
+            if(isDebug == 1)
+                fprintf(stderr,"%d\t%d\n",org,mod);
+            fputc(mod,output);
         }
         else{
-            fprintf(output,"%c",org);
-            i=0;
+            fputc(org,output);
+            keyIndex = 0;
         }
     }
     fclose(output);
-	return 0;
-}
-
-FILE* getAddress(char* arg){
-    char out[strlen(arg)];
-    for(int i = 0;i < strlen(out);i++)
-        out[i] = arg[i+2];
-    return fopen(out,"w");
+    return 0;
 }

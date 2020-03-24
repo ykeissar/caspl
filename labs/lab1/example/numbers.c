@@ -21,3 +21,4 @@ void getNumbers(int * a, int * b){
   number[i]=0;
   *b=atoi(number);  
 }
+

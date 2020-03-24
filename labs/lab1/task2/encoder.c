@@ -1,81 +1,91 @@
-#include<stdio.h> 
+#include <stdio.h>
 #include <string.h>
 
 int main(int argc,char* argv[]){
-    int isAdd = 0, isDebug =0;
-    int len=1;
-    FILE *input = stdin;
-    int enc = 0;
-    char* DEBUG_FLAG = "-D";
+    int org,mod,i,isDebug,isAdd = 0,encIndex = 0,keyIndex = 0,dif,keyLen = 0,j;
+    FILE* input = stdin;
+    FILE* output = stdout;
 
-    for(int j=1;j<argc;j++){
-        if(argv[j][0] == '-'){
-            if(argv[j][1] == 'e'){
-                enc = j;
-                len = strlen(argv[j])-2;
-            }
-                
-            if(argv[j][1] == 'i'){
-                char inPath[strlen(argv[j])];
-            
-                for(int i = 0;i < strlen(argv[j]);i++)
-                    inPath[i] = argv[j][i+2];
-                if((input=fopen(inPath,"r")) == NULL){
-                    fprintf(stderr,"File '%s' does not exist!\n",inPath);
-                    return 1;
-                }
-            }
-            
-            if(strcmp(argv[j],DEBUG_FLAG) == 0){
+    for(i = 1;i < argc; i++){
+        if(argv[i][0] == '-'){
+            if(argv[i][1] == 'D' && strlen(argv[i]) == 2){
+                puts(argv[i]);
                 isDebug = 1;
-                puts(argv[j]);
+            }
+            if(argv[i][1] == 'e'){
+                encIndex = i;
+                keyLen = strlen(argv[i])-2;
+            }
+
+            if(argv[i][1] == 'o'){
+                char outputPath[strlen(argv[i])];
+                for(j = 0;j < strlen(outputPath);j++){
+                    outputPath[j] = argv[i][j+2];
+                }
+                output = fopen(outputPath,"w");  
+            }
+
+            if(argv[i][1] == 'i'){
+                char inputPath[strlen(argv[i])];
+                for(j = 0;j < strlen(inputPath);j++){
+                    inputPath[j] = argv[i][j+2];
+                }
+                if((input = fopen(inputPath,"r")) == NULL){
+                    fprintf(stderr,"Input file '%s' does not exist!\n",inputPath);
+                    return 1;
+                }  
             }
         }
-        if(argv[j][0] == '+' && argv[j][1] == 'e'){
-            enc = j;
-            isAdd = 1;
-            len = strlen(argv[j])-2;
-        }
+         if(argv[i][0] == '+'){
+             if(argv[i][1] == 'e'){
+                isAdd = 1;
+                encIndex = i;
+                keyLen = strlen(argv[i])-2;
+             }
+         }
     }
-
-    int org, mod, i = 0;
-    int dif;
 
     while(1){
         org = getc(input);
+        mod = org;
+
         if(org == EOF){
-            printf("\n%c\n",org);
             break;
         }
-        mod = org;
-        if(enc == 0){
-            if(org >= 97 && org <= 122)
+
+        if(encIndex == 0){
+            if(org >= 97 && org<= 122){
                 mod = org - 32;
+            }
         }
-        else{ 
-            dif = argv[enc][i+2];
-            dif -= 48;
-            if(isAdd){
+        else{
+            dif = argv[encIndex][keyIndex+2] - 48;
+            if(isAdd == 1){
                 mod = org + dif;
-                mod %= 255; 
+                mod %= 128;
             }
             else{
                 mod = org - dif;
-                if(mod < 0)
-                    mod += 255;  
+                if(mod < 0){
+                    mod += 128;
+                }
             }
+            keyIndex++;
+            keyIndex %= keyLen;
         }
-        i++;
-        i %= len;
-        if(isDebug)
-            fprintf(stderr,"%d\t%d\n",org,mod);
-        if(org != 10)
-            printf("%c",mod);
+
+        if(org != 10){
+            if(isDebug == 1 )
+                fprintf(stderr,"%d\t%d\n",org,mod);
+            fputc(mod,output);
+        }
         else{
-            printf("%c",org);
-            i = 0;
+            fputc(org,output);
+            keyIndex = 0;
         }
+        
     }
+    fclose(output);
     fclose(input);
-	return 0;
+    return 0;
 }

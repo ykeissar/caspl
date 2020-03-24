@@ -1,16 +1,21 @@
-#include<stdio.h> 
+#include <stdio.h>
 
 int main(int argc,char* argv[]){
-    int c;
+    int org,mod;
     while(1){
-        c = fgetc(stdin);
-        if(c == EOF){
-            printf("%c\n",c);
+        org = getc(stdin);
+        mod = org;
+        if(org == EOF){
             break;
         }
-        if(c>=97 && c<=122)
-            c-= 32;
-        printf("%c",c);
-    } 
-	return 0;
+        if(org >= 97 && org<= 122){
+            mod = org - 32;
+        }
+        if(org != 10)
+            fputc(mod,stdout);
+        else
+            fputc(org,stdout);
+        
+    }
+    return 0;
 }
