@@ -4,7 +4,7 @@
  
 /* Gets a char c,  and if the char is 'q' , ends the program with exit code 0. Otherwise returns c. */
 char quit(char c){
-  if(c == 'q')
+  if(c == 'q') //TODO verify its ok??
     exit(0);
   return c;
 }
@@ -48,8 +48,7 @@ char cprt(char c){
 /* Ignores c, reads and returns a character from stdin using fgetc. */
  
 char my_get(char c){
-  char new = fgetc(stdin);
-  printf("%c\n",new);
+  char new = getc(stdin);
   return new;
 }
 
@@ -61,13 +60,11 @@ char censor(char c) {
 }
 
 char* map(char *array, int array_length, char (*f) (char)){
-    printf("map start\n");
     int i;
     char* mapped_array = (char*)(malloc(array_length*sizeof(char)));
     for(i=0;i<array_length;i++){
-        *(mapped_array+i)= f(*(array+i)); //*(mapped_array+i) = f(array+i);
+        *(mapped_array+i)= f(*(array+i));
     }
-    printf("map ended\n");
     return mapped_array;
 }
 
@@ -79,28 +76,39 @@ struct fun_desc {
 struct fun_desc menu[] = {
                             {"Censor", &censor}, {"Encrypt", &encrypt}, {"Decrypt", &decrypt},
                             {"Print dec", &dprt}, {"Print string", &cprt}, {"Get string", &my_get},
-                            {"Quit", &quit}, { NULL, NULL }
+                            {"Quit", &quit}, {"Junk",&menu}, { NULL, NULL }
                           };
 
 int main(int argc, char **argv){
   char* carray = malloc(5);
+  char c;
   carray[0] = '\0';
   char received[1];
-  int i, choosenOption,counter = 0;
+  int i, j, choosenOption,counter = 0;
 
+  //count functions
   while(menu[counter].name != NULL)
     counter++;
   const size_t UPPER_BOUND = counter;
 
   while(1){
+    //function choosing
     puts("Please choose a function:");
     i = 0;
     while(menu[i].name != NULL){
       printf("%d)%s\n",i,menu[i].name);
       i++;
     }
-    received[0] = fgetc(stdin);
+
+    //recieving function
+    j = 0;
+    while((c=fgetc(stdin))!= '\n'){
+      received[j] = c;
+      j++;
+    }
     choosenOption = atoi(received);
+
+    //check the choosen is between boundaries
     printf("Option: %d\n",choosenOption);
     if(choosenOption >= 0 && choosenOption <= UPPER_BOUND){
       puts("Within bounds");
@@ -109,9 +117,15 @@ int main(int argc, char **argv){
       puts("Not within bounds");
       break;
     }
-    printf("func:%d\n",choosenOption);
-    carray = map(carray,5,menu[choosenOption].fun);
+
+    // running function
+    if(choosenOption != 6)
+      carray = map(carray,5,menu[choosenOption].fun);
+    else
+      //if choosen quit, run with q so quit() will exit
+      map("q",1,menu[choosenOption].fun);    
   }
+
   free(carray);
   return 0;
 }
