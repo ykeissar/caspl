@@ -1,12 +1,12 @@
-all: c
+all: menu_map
 
-c: c.o
-	gcc -m32 -g -Wall -o c c.o
-	rm c.o
+menu_map: menu_map.o
+	gcc -m32 -g -Wall -o menu_map menu_map.o
+	rm menu_map.o
 
-c.o: c.c
-	gcc -m32 -g -Wall -c -o c.o c.c
+menu_map.o: menu_map.c
+	gcc -m32 -g -Wall -c -o menu_map.o menu_map.c
 
 .PHONY: clean
 clean:
-	rm -f *.o c
+	rm -f *.o menu_map

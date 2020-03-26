@@ -4,7 +4,7 @@
  
 /* Gets a char c,  and if the char is 'q' , ends the program with exit code 0. Otherwise returns c. */
 char quit(char c){
-  if(c == 'q') //TODO verify its ok??
+  if(c == 'q')
     exit(0);
   return c;
 }
@@ -48,8 +48,7 @@ char cprt(char c){
 /* Ignores c, reads and returns a character from stdin using fgetc. */
  
 char my_get(char c){
-  char new = getc(stdin);
-  return new;
+  return fgetc(stdin);
 }
 
 char censor(char c) {
@@ -63,69 +62,23 @@ char* map(char *array, int array_length, char (*f) (char)){
     int i;
     char* mapped_array = (char*)(malloc(array_length*sizeof(char)));
     for(i=0;i<array_length;i++){
-        *(mapped_array+i)= f(*(array+i));
+        *(mapped_array+i)= f(*(array+i)); //*(mapped_array+i) = f(array+i);
     }
     return mapped_array;
 }
 
-struct fun_desc {
-  char *name;
-  char (*fun)(char);
-};
-
-struct fun_desc menu[] = {
-                            {"Censor", &censor}, {"Encrypt", &encrypt}, {"Decrypt", &decrypt},
-                            {"Print dec", &dprt}, {"Print string", &cprt}, {"Get string", &my_get},
-                            {"Quit", &quit}, {"Junk",&menu}, { NULL, NULL }
-                          };
-
 int main(int argc, char **argv){
-  char* carray = malloc(5);
-  char c;
-  carray[0] = '\0';
-  char received[1];
-  int i, j, choosenOption,counter = 0;
-
-  //count functions
-  while(menu[counter].name != NULL)
-    counter++;
-  const size_t UPPER_BOUND = counter;
-
-  while(1){
-    //function choosing
-    puts("Please choose a function:");
-    i = 0;
-    while(menu[i].name != NULL){
-      printf("%d)%s\n",i,menu[i].name);
-      i++;
-    }
-
-    //recieving function
-    j = 0;
-    while((c=fgetc(stdin))!= '\n'){
-      received[j] = c;
-      j++;
-    }
-    choosenOption = atoi(received);
-
-    //check the choosen is between boundaries
-    printf("Option: %d\n",choosenOption);
-    if(choosenOption >= 0 && choosenOption <= UPPER_BOUND){
-      puts("Within bounds");
-    }
-    else{
-      puts("Not within bounds");
-      break;
-    }
-
-    // running function
-    if(choosenOption != 6)
-      carray = map(carray,5,menu[choosenOption].fun);
-    else
-      //if choosen quit, run with q so quit() will exit
-      map("q",1,menu[choosenOption].fun);    
-  }
-
-  free(carray);
+  int base_length = 5;
+  char arr1[base_length];
+  char* arr2 = map(arr1,base_length,my_get);
+  char* arr3 = map(arr2,base_length,encrypt);
+  char* arr4 = map(arr3,base_length,dprt);
+  char* arr5 = map(arr4,base_length,decrypt);
+  char* arr6 = map(arr5,base_length,cprt);
+  free(arr2);
+  free(arr3);
+  free(arr4);
+  free(arr5);
+  free(arr6);
   return 0;
 }
