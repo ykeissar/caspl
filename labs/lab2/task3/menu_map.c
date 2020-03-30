@@ -119,11 +119,8 @@ int main(int argc, char **argv){
     }
 
     // running function
-    if(choosenOption != 6)
-      carray = map(carray,5,menu[choosenOption].fun);
-    else
-      //if choosen quit, run with q so quit() will exit
-      map("q",1,menu[choosenOption].fun);    
+    carray = map(carray,5,menu[choosenOption].fun);
+    puts("DONE.\n");    
   }
 
   free(carray);
