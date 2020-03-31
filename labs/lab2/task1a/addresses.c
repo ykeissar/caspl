@@ -17,7 +17,7 @@ int main (int argc, char** argv){
     int * addr4 = (int*)(malloc(50)); 
     printf("- &addr2: %p\n",&addr2);
     printf("- &addr3: %p\n",&addr3);
-    printf("- foo: %p\n",foo);
+    printf("- foo: %p\n",foo);//where does func pointers are placed
     printf("- &addr5: %p\n",&addr5);
     
 	point_at(&addr5);
@@ -30,13 +30,13 @@ int main (int argc, char** argv){
     printf("- &foo1: %p\n" ,&foo1);
     printf("- &foo1: %p\n" ,&foo2);
     printf("- &foo2 - &foo1: %ld\n" ,&foo2 - &foo1);
+    
     printf("sizeof(long): %ld\n",sizeof(long));
     printf("sizeof(float): %ld\n",sizeof(float));
     printf("sizeof(int): %ld\n",sizeof(int));
     printf("sizeof(double): %ld\n",sizeof(double));
     printf("sizeof(char): %ld\n",sizeof(char));
-
-
+    
     return 0;
 }
 
