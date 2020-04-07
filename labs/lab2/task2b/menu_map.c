@@ -2,13 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Gets a char c,  and if the char is 'q' , ends the program with exit code 0. Otherwise returns c. */
-char quit(char c){
-  if(c == 'q')
-    exit(0);
-  return c;
-}
-
 char censor(char c){
   if (c == '!')
     return '.';
@@ -57,10 +50,10 @@ char my_get(char c){
   return fgetc(stdin);
 }
 
-char* map(char *array, int array_length, char (*f)(char)){
+char *map(char *array, int array_length, char (*f)(char)){
   int i;
-  char* mapped_array = (char *)(malloc(array_length * sizeof(char)));
-  for(i = 0; i < array_length; i++){
+  char *mapped_array = (char *)(malloc(array_length * sizeof(char)));
+  for (i = 0; i < array_length; i++){
     *(mapped_array + i) = f(*(array + i));
   }
   return mapped_array;

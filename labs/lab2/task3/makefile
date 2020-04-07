@@ -2,8 +2,7 @@ all: menu_map
 
 menu_map: menu_map.o
 	gcc -m32 -g -Wall -o menu_map menu_map.o
-	rm menu_map.o
-
+	rm -f *.o
 menu_map.o: menu_map.c
 	gcc -m32 -g -Wall -c -o menu_map.o menu_map.c
 

@@ -7,6 +7,7 @@
 char *words(int count) {
   char *words = "words";
   char *word = "word";
+
   if(count==1) 
     return word;
   return words;
