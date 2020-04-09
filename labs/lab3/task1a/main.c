@@ -8,7 +8,7 @@ typedef struct virus{
   char* sig;
 }virus;
 
-void distructVirus(virus * vir);
+void destructVirus(virus * vir);
 
 virus* readVirus(FILE* input);
 void printVirus(virus* virus, FILE* output);
@@ -18,7 +18,7 @@ int main(void){
   virus* v;
   while((v=readVirus(f))!= NULL){
     printVirus(v,stdout);
-    distructVirus(v);
+    destructVirus(v);
   }
   fclose(f);
   return 0;
@@ -63,7 +63,7 @@ void printVirus(virus* virus, FILE* output){
   fprintf(output,"\n");
 }
 
-void distructVirus(virus * vir){
+void destructVirus(virus * vir){
   free(vir->sig);
   free(vir);
 }
