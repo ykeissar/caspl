@@ -1,12 +1,12 @@
-all: main
+all: task1c
 
-main: main.o
-	gcc -m32 -g -Wall -o main main.o
-	rm main.o
+task1c: task1c.o
+	gcc -m32 -g -Wall -o task1c task1c.o
+	rm task1c.o
 
-main.o: main.c
-	gcc -m32 -g -Wall -c -o main.o main.c
+task1c.o: task1c.c
+	gcc -m32 -g -Wall -c -o task1c.o task1c.c
 
 .PHONY: clean
 clean:
-	rm -f *.o main
+	rm -f *.o task1c

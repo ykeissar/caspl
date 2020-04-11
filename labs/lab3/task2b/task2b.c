@@ -31,28 +31,65 @@ void print_virus(virus* virus, FILE* output);
 link* load_signatures(link *virus_list, FILE* ouput);
 link* quit(link* virus_list,FILE* output);
 
+void detect_virus(char *buffer, unsigned int size, link *virus_list);
+
+void kill_virus(char *fileName, int signitureOffset, int signitureSize);
+
 struct func_desc{
   char* name;
   link* (*fun)(link*,FILE*);
 };
 
-struct func_desc menu[] = {{"Load signatures",load_signatures},{"Print signatures",list_print},{"Quit",quit}};
+struct func_desc menu[] = {{"Load signatures",load_signatures},{"Print signatures",list_print},
+                           {"Detect viruses",NULL},{"Fix file",NULL},{"Quit",quit}};
 
-const size_t MENU_SIZE = 3;
+const size_t MENU_SIZE = sizeof(menu)/sizeof(menu[0]);
 
-int main(void){
-  int i, choosen;
-  char s[2];
+const size_t BUFFER_SIZE = 10000;
+
+int main(int argc,char** argv){
+  int i, virusSize, byteOffset,choosen;
   link* virus_list = NULL;
+  
+  //stream file into buffer
+  char buffer[BUFFER_SIZE];
+  FILE* fileToDetect = fopen(argv[1],"rd");
+  fseek(fileToDetect, 0, SEEK_END);
+  size_t fileSize = ftell(fileToDetect); 
+  fseek(fileToDetect, 0, SEEK_SET);
+  if(BUFFER_SIZE < fileSize)
+    fileSize = BUFFER_SIZE;
+  fread(buffer,fileSize,1,fileToDetect);
 
+  //start cycle
   while(1){
     for(i = 0 ; i < MENU_SIZE ; i++){
       printf("%d) %s\n",i+1,menu[i].name);
     }
     printf("Option: ");
-    scanf("%s",s);
-    choosen = atoi(s);
-    virus_list = menu[choosen-1].fun(virus_list,stdout);
+    scanf("%d",&choosen);
+    switch(choosen){
+      case 1:
+        virus_list = menu[choosen-1].fun(virus_list,stdout);
+        break;
+      case 2:
+        virus_list = menu[choosen-1].fun(virus_list,stdout);
+        break;
+      case 3:
+        detect_virus(buffer,fileSize,virus_list);
+        break;
+      case 4:
+        printf("Starting byte: ");
+        scanf("%d",&byteOffset);
+        printf("Virus size: ");
+        scanf("%d",&virusSize);
+        kill_virus(argv[1],byteOffset,virusSize);
+        break;
+      case 5:
+        fclose(fileToDetect);
+        virus_list = menu[choosen-1].fun(virus_list,stdout);
+        break;
+    }
   }
 
   return 0;
@@ -101,11 +138,12 @@ void destructVirus(virus * vir){
 }
 
 link* list_print(link *virus_list, FILE* ouput){
+  link* holder = virus_list;
   while(virus_list != NULL){
     print_virus(virus_list->vir,ouput);
     virus_list = virus_list->nextVirus;
   }
-  return virus_list;
+  return holder;
 }
 
 link* list_append(link* virus_list, virus* data){
@@ -153,4 +191,30 @@ link* load_signatures(link *virus_list, FILE* ouput){
 link* quit(link* virus_list,FILE* output){
   list_free(virus_list);
   exit(0);
+}
+
+void detect_virus(char *buffer, unsigned int size, link *virus_list){
+  int i;
+  link* holder;
+  for(i = 0 ; i < size ; i++){
+    holder = virus_list;
+    while(virus_list != NULL){
+      if(memcmp(buffer+i,virus_list->vir->sig,virus_list->vir->SigSize) == 0){
+        printf("Starting byte: %d, Virus name: %s, Signature size: %d\n",i,virus_list->vir->virusName,virus_list->vir->SigSize);
+      }
+      virus_list = virus_list->nextVirus;
+    }
+    virus_list = holder;
+  }
+}
+
+void kill_virus(char *fileName, int signitureOffset, int signitureSize){
+  FILE* file = fopen(fileName,"rw");
+  char str[signitureSize];
+  int i;
+  for(i=0;i<signitureSize;i++)
+    str[i] = '\0';
+  fseek(file,signitureOffset,SEEK_SET);
+  fwrite(str,1,strlen(str),file);
+  fclose(file);
 }
