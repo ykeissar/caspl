@@ -11,8 +11,8 @@ BIN_DIR		:=	bin
 
 all: task1 # task2
 
-task1:	$(OBJ_DIR)/main1.o $(OBJ_DIR)/task1.o
-	$(CC) -o $(BIN_DIR)/task1.bin $(OBJ_DIR)/main1.o $(OBJ_DIR)/task1.o
+task1:	$(OBJ_DIR)/main_task1Assignment1.o $(OBJ_DIR)/asm_task1Assignment1.o
+	$(CC) -o $(BIN_DIR)/task1.bin $(OBJ_DIR)/main_task1Assignment1.o $(OBJ_DIR)/asm_task1Assignment1.o
 
 # task2:
 # add your makefile code here...
@@ -23,7 +23,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
 	$(CC) -c $(CC_FLAGS) $< -o $@
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.s
-	$(ASM) $(ASM_FLAGS) $< -o $@ -l $(su<bst .o,.lst,$(subst $(OBJ_DIR),$(LIST_DIR),$@))
+	$(ASM) $(ASM_FLAGS) $< -o $@ -l $(LIST_DIR)/list.lst
 
 clean:
 	rm $(BIN_DIR)/*.bin $(OBJ_DIR)/*.o $(LIST_DIR)/*.lst
