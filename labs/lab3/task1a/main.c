@@ -8,17 +8,17 @@ typedef struct virus{
   unsigned char* sig;
 }virus;
 
-void destructVirus(virus * vir);
+void destruct_virus(virus * vir);
 
-virus* readVirus(FILE* input);
-void printVirus(virus* virus, FILE* output);
+virus* read_virus(FILE* input);
+void print_virus(virus* virus, FILE* output);
 
 int main(void){
   FILE* f = fopen("signatures","r");
   virus* v;
-  while((v=readVirus(f))!= NULL){
-    printVirus(v,stdout);
-    destructVirus(v);
+  while((v=read_virus(f))!= NULL){
+    print_virus(v,stdout);
+    destruct_virus(v);
   }
   fclose(f);
   return 0;
@@ -31,7 +31,7 @@ int print_hex(unsigned char* buffer, int length,FILE* output){
   return 0;
 }
 
-virus* readVirus(FILE* input){
+virus* read_virus(FILE* input){
   virus* vir = (virus*) malloc(sizeof(virus));
   char* buffer= (char*) malloc(sizeof(char)*18);
 
@@ -56,13 +56,13 @@ virus* readVirus(FILE* input){
   return vir;
 }
 
-void printVirus(virus* virus, FILE* output){
+void print_virus(virus* virus, FILE* output){
   fprintf(output,"Virus name: %s\nVirus size: %d\nsignature:\n",virus->virusName,virus->SigSize);
   print_hex(virus->sig,virus->SigSize,output);
   fprintf(output,"\n\n");
 }
 
-void destructVirus(virus * vir){
+void destruct_virus(virus * vir){
   free(vir->sig);
   free(vir);
 }

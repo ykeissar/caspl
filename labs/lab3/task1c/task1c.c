@@ -28,7 +28,7 @@ link* create_link(virus* data);
 virus* read_virus(FILE* input);
 void print_virus(virus* virus, FILE* output);
 
-char* getBuffer(char* fileName, size_t fileSize);
+char* get_buffer(char* fileName, size_t fileSize);
 
 link* load_signatures(link *virus_list, FILE* ouput);
 link* quit(link* virus_list,FILE* output);
@@ -73,7 +73,7 @@ int main(int argc,char** argv){
         virus_list = menu[choosen-1].fun(virus_list,stdout);
         break;
       case 3:
-        buffer = getBuffer(argv[1],fileSize);
+        buffer = get_buffer(argv[1],fileSize);
         detect_virus(buffer,fileSize,virus_list);
         free(buffer);
         break;
@@ -185,7 +185,7 @@ link* quit(link* virus_list,FILE* output){
   exit(0);
 }
 
-char* getBuffer(char* fileName, size_t fileSize){
+char* get_buffer(char* fileName, size_t fileSize){
   char* buffer = (char*) malloc(BUFFER_SIZE*sizeof(char));
   FILE* fileToDetect = fopen(fileName,"r");
 

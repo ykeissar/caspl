@@ -31,9 +31,8 @@ void print_virus(virus* virus, FILE* output);
 link* load_signatures(link *virus_list, FILE* ouput);
 link* quit(link* virus_list,FILE* output);
 
-char* getBuffer(char* fileName, size_t fileSize);
+char* get_buffer(char* fileName, size_t fileSize);
 void detect_virus(char *buffer, unsigned int size, link *virus_list);
-
 void kill_virus(char *fileName, int signitureOffset, int signitureSize);
 
 struct func_desc{
@@ -76,7 +75,7 @@ int main(int argc,char** argv){
         virus_list = menu[choosen-1].fun(virus_list,stdout);
         break;
       case 3:
-        buffer = getBuffer(argv[1],fileSize);
+        buffer = get_buffer(argv[1],fileSize);
         detect_virus(buffer,fileSize,virus_list);
         free(buffer);
         break;
@@ -195,7 +194,7 @@ link* quit(link* virus_list,FILE* output){
   exit(0);
 }
 
-char* getBuffer(char* fileName, size_t fileSize){
+char* get_buffer(char* fileName, size_t fileSize){
   char* buffer = (char*) malloc(BUFFER_SIZE*sizeof(char));
   FILE* fileToDetect = fopen(fileName,"r");
 
