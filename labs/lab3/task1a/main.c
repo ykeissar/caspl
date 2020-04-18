@@ -5,7 +5,7 @@
 typedef struct virus{
   unsigned short SigSize;
   char virusName[16];
-  char* sig;
+  unsigned char* sig;
 }virus;
 
 void destructVirus(virus * vir);
@@ -14,7 +14,7 @@ virus* readVirus(FILE* input);
 void printVirus(virus* virus, FILE* output);
 
 int main(void){
-  FILE* f = fopen("signatures","rb");
+  FILE* f = fopen("signatures","r");
   virus* v;
   while((v=readVirus(f))!= NULL){
     printVirus(v,stdout);
@@ -24,10 +24,10 @@ int main(void){
   return 0;
 }
 
-int printHex(char* buffer, int length,FILE* output){
+int print_hex(unsigned char* buffer, int length,FILE* output){
   int i;
   for(i = 0 ; i < length ; i++)
-    fprintf(stdout,"%02hhX ",*(buffer+i));
+    fprintf(stdout,"%02X ",*(buffer+i));
   return 0;
 }
 
@@ -36,7 +36,6 @@ virus* readVirus(FILE* input){
   char* buffer= (char*) malloc(sizeof(char)*18);
 
   if(fread(buffer,18,1,input) <= 0){
-    fprintf(stderr,"Virus's format in the file broken.\n");
     free(vir);
     free(buffer);
     return NULL;
@@ -48,7 +47,7 @@ virus* readVirus(FILE* input){
   memcpy(vir->virusName,buffer+2,16);
   free(buffer);
 
-  vir->sig = (char*) malloc(sizeof(char)*(vir->SigSize));
+  vir->sig = (unsigned char*) malloc(sizeof(unsigned char)*(vir->SigSize));
   if(fread(vir->sig,vir->SigSize,1,input) <= 0){
     fprintf(stderr,"Virus's format in the file broken.\n");
     free(vir);
@@ -58,9 +57,9 @@ virus* readVirus(FILE* input){
 }
 
 void printVirus(virus* virus, FILE* output){
-  fprintf(output,"Virus Name: %s\nVirus Size: %d\nsignature:\n",virus->virusName,virus->SigSize);
-  printHex(virus->sig,virus->SigSize,output);
-  fprintf(output,"\n");
+  fprintf(output,"Virus name: %s\nVirus size: %d\nsignature:\n",virus->virusName,virus->SigSize);
+  print_hex(virus->sig,virus->SigSize,output);
+  fprintf(output,"\n\n");
 }
 
 void destructVirus(virus * vir){

@@ -5,7 +5,7 @@
 typedef struct virus{
   unsigned short SigSize;
   char virusName[16];
-  char* sig;
+  unsigned char* sig;
 }virus;
 
 typedef struct link{
@@ -36,13 +36,12 @@ struct func_desc{
   link* (*fun)(link*,FILE*);
 };
 
-struct func_desc menu[] = {{"Load signatures",load_signatures},{"Print signatures",list_print},{"Quit",quit}};
+struct func_desc menu[] = {{"Load signatures",load_signatures},{"Print signatures",list_print},{"Quit",quit},{NULL,NULL}};
 
 const size_t MENU_SIZE = 3;
 
 int main(void){
   int i, choosen;
-  char s[2];
   link* virus_list = NULL;
 
   while(1){
@@ -50,18 +49,17 @@ int main(void){
       printf("%d) %s\n",i+1,menu[i].name);
     }
     printf("Option: ");
-    scanf("%s",s);
-    choosen = atoi(s);
+    scanf("%d",&choosen);
     virus_list = menu[choosen-1].fun(virus_list,stdout);
   }
 
   return 0;
 }
 
-int print_hex(char* buffer, int length,FILE* output){
+int print_hex(unsigned char* buffer, int length,FILE* output){
   int i;
   for(i = 0 ; i < length ; i++)
-    fprintf(stdout,"%02hhX ",*(buffer+i));
+    fprintf(stdout,"%02X ",*(buffer+i));
   return 0;
 }
 
@@ -81,7 +79,7 @@ virus* read_virus(FILE* input){
   memcpy(vir->virusName,buffer+2,16);
   free(buffer);
 
-  vir->sig = (char*) malloc(sizeof(char)*(vir->SigSize));
+  vir->sig = (unsigned char*) malloc(sizeof(unsigned char)*(vir->SigSize));
   if(fread(vir->sig,vir->SigSize,1,input) <= 0){
     free(vir);
     return NULL;
@@ -92,7 +90,7 @@ virus* read_virus(FILE* input){
 void print_virus(virus* virus, FILE* output){
   fprintf(output,"Virus Name: %s\nVirus Size: %d\nsignature:\n",virus->virusName,virus->SigSize);
   print_hex(virus->sig,virus->SigSize,output);
-  fprintf(output,"\n");
+  fprintf(output,"\n\n");
 }
 
 void destructVirus(virus * vir){
@@ -143,7 +141,7 @@ link* load_signatures(link *virus_list, FILE* ouput){
   char s[MAX_FILE_NAME_SIZE];
   printf("Enter signatures file name: ");
   scanf("%s",s);
-  FILE* inputFile = fopen(s,"rb");
+  FILE* inputFile = fopen(s,"r");
   virus* v;
   while((v = read_virus(inputFile)) != NULL)
     virus_list = list_append(virus_list,v);

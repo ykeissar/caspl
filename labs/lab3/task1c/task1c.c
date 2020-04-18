@@ -5,7 +5,7 @@
 typedef struct virus{
   unsigned short SigSize;
   char virusName[16];
-  char* sig;
+  unsigned char* sig;
 }virus;
 
 typedef struct link{
@@ -28,6 +28,8 @@ link* create_link(virus* data);
 virus* read_virus(FILE* input);
 void print_virus(virus* virus, FILE* output);
 
+char* getBuffer(char* fileName, size_t fileSize);
+
 link* load_signatures(link *virus_list, FILE* ouput);
 link* quit(link* virus_list,FILE* output);
 
@@ -38,7 +40,7 @@ struct func_desc{
   link* (*fun)(link*,FILE*);
 };
 
-struct func_desc menu[] = {{"Load signatures",load_signatures},{"Print signatures",list_print},{"Detect viruses",NULL},{"Quit",quit}};
+struct func_desc menu[] = {{"Load signatures",load_signatures},{"Print signatures",list_print},{"Detect viruses",NULL},{"Quit",quit},{NULL,NULL}};
 
 const size_t MENU_SIZE = sizeof(menu)/sizeof(menu[0]);
 
@@ -47,20 +49,18 @@ const size_t BUFFER_SIZE = 10000;
 int main(int argc,char** argv){
   int i,choosen;
   link* virus_list = NULL;
-  
-  //stream file into buffer
-  char buffer[BUFFER_SIZE];
-  FILE* fileToDetect = fopen(argv[1],"rd");
+  char* buffer;
+
+  FILE* fileToDetect = fopen(argv[1],"r");
+  //get file size
   fseek(fileToDetect, 0, SEEK_END);
   size_t fileSize = ftell(fileToDetect); 
   fseek(fileToDetect, 0, SEEK_SET);
-  if(BUFFER_SIZE < fileSize)
-    fileSize = BUFFER_SIZE;
-  fread(buffer,fileSize,1,fileToDetect);
+  fclose(fileToDetect);
 
   //start cycle
   while(1){
-    for(i = 0 ; i < MENU_SIZE ; i++){
+    for(i = 0 ; i < MENU_SIZE-1 ; i++){
       printf("%d) %s\n",i+1,menu[i].name);
     }
     printf("Option: ");
@@ -73,7 +73,9 @@ int main(int argc,char** argv){
         virus_list = menu[choosen-1].fun(virus_list,stdout);
         break;
       case 3:
+        buffer = getBuffer(argv[1],fileSize);
         detect_virus(buffer,fileSize,virus_list);
+        free(buffer);
         break;
       case 4:
         virus_list = menu[choosen-1].fun(virus_list,stdout);
@@ -84,10 +86,10 @@ int main(int argc,char** argv){
   return 0;
 }
 
-int print_hex(char* buffer, int length,FILE* output){
+int print_hex(unsigned char* buffer, int length,FILE* output){
   int i;
   for(i = 0 ; i < length ; i++)
-    fprintf(stdout,"%02hhX ",*(buffer+i));
+    fprintf(stdout,"%02X ",*(buffer+i));
   return 0;
 }
 
@@ -107,7 +109,7 @@ virus* read_virus(FILE* input){
   memcpy(vir->virusName,buffer+2,16);
   free(buffer);
 
-  vir->sig = (char*) malloc(sizeof(char)*(vir->SigSize));
+  vir->sig = (unsigned char*) malloc(sizeof(unsigned char)*(vir->SigSize));
   if(fread(vir->sig,vir->SigSize,1,input) <= 0){
     free(vir);
     return NULL;
@@ -118,7 +120,7 @@ virus* read_virus(FILE* input){
 void print_virus(virus* virus, FILE* output){
   fprintf(output,"Virus Name: %s\nVirus Size: %d\nsignature:\n",virus->virusName,virus->SigSize);
   print_hex(virus->sig,virus->SigSize,output);
-  fprintf(output,"\n");
+  fprintf(output,"\n\n");
 }
 
 void destructVirus(virus * vir){
@@ -170,16 +172,28 @@ link* load_signatures(link *virus_list, FILE* ouput){
   char s[MAX_FILE_NAME_SIZE];
   printf("Enter signatures file name: ");
   scanf("%s",s);
-  FILE* inputFile = fopen(s,"rb");
+  FILE* inputFile = fopen(s,"r");
   virus* v;
   while((v = read_virus(inputFile)) != NULL)
     virus_list = list_append(virus_list,v);
+  fclose(inputFile);
   return virus_list;
 }
 
 link* quit(link* virus_list,FILE* output){
   list_free(virus_list);
   exit(0);
+}
+
+char* getBuffer(char* fileName, size_t fileSize){
+  char* buffer = (char*) malloc(BUFFER_SIZE*sizeof(char));
+  FILE* fileToDetect = fopen(fileName,"r");
+
+  if(BUFFER_SIZE < fileSize)
+    fileSize = BUFFER_SIZE;
+  fread(buffer,fileSize,1,fileToDetect);
+  fclose(fileToDetect);
+  return buffer;
 }
 
 void detect_virus(char *buffer, unsigned int size, link *virus_list){
