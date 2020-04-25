@@ -10,12 +10,12 @@ assFunc:                      ;
     push ebp              	  ; save Base Pointer (bp) original value
     mov ebp, esp              ; reset EBP to the current ESP
     sub esp, 4                ; allocate space for local variable sum
-    mov ebx, [ebp+8]          ; get first argument
-    mov ecx, [ebp+12]         ; get second argument
+    mov ebx, [ebp+8]          ; get first argument - x
+    mov ecx, [ebp+12]         ; get second argument - y
     pushad                    ; backup registers
     pushfd                    ; backup EFLAGS
-    push ecx                  ; push second arg
-    push ebx                  ; push first arg
+    push ecx                  ; push second arg - y
+    push ebx                  ; push first arg - x
     call c_check_validity     ;
     mov [ebp-4], eax          ; saved returned value
     add esp, 8                ; clear stack from c_check_validity args
