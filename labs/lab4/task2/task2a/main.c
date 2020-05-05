@@ -64,6 +64,10 @@ int main (int argc , char* argv[], char* envp[]){
     if(d->d_ino != 0){
       sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,d->d_name,strlen(d->d_name)),logFd); 
       sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,"\n",1),logFd);
+      if(logFd >= 0){
+        sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,logFd,d->d_name,strlen(d->d_name)),logFd); 
+        sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,logFd,itoa(d->d_reclen),strlen(itoa(d->d_reclen))-1),logFd); 
+      }
     }
     offset = offset + d->d_reclen;
   }

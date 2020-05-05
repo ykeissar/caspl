@@ -15,4 +15,4 @@ start.o: start.s
 
 .PHONY: clean
 clean:
-	rm -f *.o task1b
+	rm -f *.o task1b debug_log

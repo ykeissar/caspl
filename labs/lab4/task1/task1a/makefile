@@ -15,4 +15,4 @@ start.o: start.s
 
 .PHONY: clean
 clean:
-	rm -f *.o encoder
+	rm -f *.o encoder debug_log

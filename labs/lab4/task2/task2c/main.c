@@ -59,7 +59,6 @@ int main (int argc , char* argv[], char* envp[]){
   int i,fd,read,offset, prefixSize, fileNameSize;
   int logFd = -1, prefixIndex = -1, fileNameIndex = -1;
   char buffer[MAX_DATA_SIZE];
-  infector("task2a");
   char* stringType;
   char fileType;
   dirent* d;
@@ -98,7 +97,6 @@ int main (int argc , char* argv[], char* envp[]){
       if(fileNameIndex != -1){
         fileType = *(buffer + offset + d->d_reclen - 1);
         if(strncmp(argv[fileNameIndex],d->d_name,fileNameSize) == 0){
-          infection();
           infector(argv[fileNameIndex]);
           sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,d->d_name,strlen(d->d_name)),logFd); 
           sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,"\n",1),logFd);

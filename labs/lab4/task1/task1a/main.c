@@ -23,8 +23,8 @@ int main (int argc , char* argv[], char* envp[]){
   int logFd = -1;
   
   for(i = 1 ; i < argc ; i++){
-    if(strcmp("-D",argv[i])==0){
-      logFd = system_call(SYS_OPEN,"log.txt",O_WRONLY | O_CREATE,0777);
+    if(strcmp("-D",argv[i]) == 0){
+      logFd = system_call(SYS_OPEN,"debug_log",O_WRONLY | O_CREATE,0644);
     }
   }
 
@@ -53,7 +53,7 @@ int sys_call_prnt(int sysCallId,int returnValue,int logFd){
   if(logFd >= 0){
     system_call(SYS_WRITE,logFd,"\nsys call: ",11);
     system_call(SYS_WRITE,logFd,itoa(sysCallId),1);
-    system_call(SYS_WRITE,logFd," return value: ",16);
+    system_call(SYS_WRITE,logFd," return value: ",15);
     system_call(SYS_WRITE,logFd,itoa(returnValue),1);
     system_call(SYS_WRITE,logFd,"\n",1);
   }

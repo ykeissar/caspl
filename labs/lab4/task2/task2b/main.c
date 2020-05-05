@@ -86,6 +86,10 @@ int main (int argc , char* argv[], char* envp[]){
       if(prefixIndex != -1){
         fileType = *(buffer + offset + d->d_reclen - 1);
         if(strncmp(argv[prefixIndex],d->d_name,prefixSize) == 0){
+          if(logFd >= 0){
+            sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,logFd,d->d_name,strlen(d->d_name)),logFd); 
+            sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,logFd,itoa(d->d_reclen),strlen(itoa(d->d_reclen))-1),logFd); 
+          }
           sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,d->d_name,strlen(d->d_name)),logFd); 
           sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,"\n",1),logFd);
           sys_call_prnt(SYS_WRITE,system_call(SYS_WRITE,STDOUT,&fileType,1),logFd);
