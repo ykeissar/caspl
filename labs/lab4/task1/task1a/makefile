@@ -2,7 +2,6 @@ all: encoder
 
 encoder: start.o main.o util.o
 	ld -m elf_i386 start.o main.o util.o -o encoder
-	rm *.o
 
 util.o: util.c
 	gcc -m32 -Wall -ansi -c -nostdlib -fno-stack-protector util.c -o util.o

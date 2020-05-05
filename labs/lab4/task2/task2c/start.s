@@ -7,6 +7,7 @@ global system_call
 global infection
 global infector
 extern main
+
 _start:
     pop    dword ecx    ; ecx = argc
     mov    esi,esp      ; esi = argv
@@ -20,6 +21,7 @@ _start:
     push    dword ecx   ; int argc
 
     call    main        ; int main( int argc, char *argv[], char *envp[] )
+
     mov     ebx,eax
     mov     eax,1
     int     0x80
