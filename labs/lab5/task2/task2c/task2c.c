@@ -60,7 +60,7 @@ int main(int argc,char** argv){
         }
     }
 
-    cmdLine* cmd = (cmdLine*) malloc(sizeof(cmdLine));
+    cmdLine* cmd;
     process* process_list = NULL;
 
     while(1){
@@ -70,26 +70,33 @@ int main(int argc,char** argv){
         if(strcmp(input,"\n") == 0)
             continue;
         cmd = parseCmdLines(input);
-        if(strcmp(cmd->arguments[0],"quit") == 0)
+        if(strcmp(cmd->arguments[0],"quit") == 0){
+            freeCmdLines(cmd);
             break;
+        }
         if(strcmp(cmd->arguments[0],"cd") == 0){
             chdir(cmd->arguments[1]);
+            freeCmdLines(cmd);
             continue;
         }
         if(strcmp(cmd->arguments[0],"proc") == 0){
             printProcessList(&process_list);
+            freeCmdLines(cmd);
             continue;
         }
         if(strncmp(cmd->arguments[0],"kill",4) == 0){
             myKill(atoi(cmd->arguments[1]),SIGINT);
+            freeCmdLines(cmd);
             continue;
         }
         if(strncmp(cmd->arguments[0],"suspend",7) == 0){
             myKill(atoi(cmd->arguments[1]),SIGTSTP);
+            freeCmdLines(cmd);
             continue;
         }
         if(strncmp(cmd->arguments[0],"wake",4) == 0){
             myKill(atoi(cmd->arguments[1]),SIGCONT);
+            freeCmdLines(cmd);
             continue;
         }
         if((childPid = fork()) == 0){
@@ -105,17 +112,19 @@ int main(int argc,char** argv){
 
         if(cmd->blocking == 1)
             waitpid(childPid,NULL,0);
-
+        freeCmdLines(cmd);
     }
-    freeCmdLines(cmd);
+    freeProcessList(process_list);
     return 0;
 }
 
 void execute(cmdLine* pCmdLine){
     if(execvp(pCmdLine->arguments[0],pCmdLine->arguments) == -1){
         perror("Error has occured: ");
+        free(pCmdLine);
         _exit(1);
     }
+    free(pCmdLine);
     _exit(0);
 }
 
