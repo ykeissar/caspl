@@ -11,11 +11,11 @@
 
 void execute(cmdLine* pCmdLine);
 
+int debugMode = 0;
 int main(int argc,char** argv){
     char pathBuffer[PATH_MAX];
     char input[MAX_INPUT_SIZE];
     int i, childPid;
-    int debugMode = 0;
 
     for(i = 1;i < argc;i++){
         if(strcmp(argv[i],"-d") == 0){
@@ -29,11 +29,16 @@ int main(int argc,char** argv){
         getcwd(pathBuffer,PATH_MAX);
         printf("%s ",pathBuffer);
         fgets(input,MAX_INPUT_SIZE,stdin);
+        if(strcmp(input,"\n") == 0)
+            continue;
         cmd = parseCmdLines(input);
-        if(strcmp(cmd->arguments[0],"quit") == 0)
+        if(strcmp(cmd->arguments[0],"quit") == 0){
+            freeCmdLines(cmd);
             break;
+        }
         if(strcmp(cmd->arguments[0],"cd") == 0){
             chdir(cmd->arguments[1]);
+            freeCmdLines(cmd);
             continue;
         }
         if((childPid = fork()) == 0){
@@ -46,15 +51,16 @@ int main(int argc,char** argv){
         }
         if(cmd->blocking == 1)
             waitpid(childPid,NULL,0);
-
+        freeCmdLines(cmd);
     }
-    freeCmdLines(cmd);
     return 0;
 }
 
 void execute(cmdLine* pCmdLine){
     if(execvp(pCmdLine->arguments[0],pCmdLine->arguments) == -1){
         perror("Error has occured: ");
+        freeCmdLines(pCmdLine);
         _exit(1);
     }
+    freeCmdLines(pCmdLine);
 }

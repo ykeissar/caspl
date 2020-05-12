@@ -9,18 +9,26 @@ void sighandle();
 int main(int argc, char **argv){ 
 
 	printf("Starting the program pid: %d\n",getpid());
+    fflush(stdout);
 	int c=0;
-    while(1) {
-        signal(SIGTSTP,sighandle);
-        signal(SIGINT,sighandle);
-        signal(SIGCONT,sighandle);
-	}
 
+    signal(SIGTSTP,sighandle);
+    signal(SIGTSTP, SIG_DFL);
+    
+    signal(SIGINT,sighandle);
+    signal(SIGINT, SIG_DFL);
+
+    signal(SIGCONT,sighandle);
+    signal(SIGCONT, SIG_DFL);
+
+    while(1) {
+        sleep(2);
+	}
 	return 0;
 }
 
 void sighandle(int sig) {
-    signal(sig, SIG_DFL);
     printf("signal - '%s' was recevie.\n",strsignal(sig));
+    fflush(stdout);
     raise(sig);
 } 

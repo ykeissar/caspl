@@ -9,21 +9,31 @@ void sighandle();
 int main(int argc, char **argv){ 
 
 	printf("Starting the program pid: %d\n",getpid());
-    while(1) {
-        signal(SIGTSTP,sighandle);
-        signal(SIGINT,sighandle);
-        signal(SIGCONT,sighandle);
-	}
+	int c=0;
 
+    signal(SIGTSTP,sighandle);
+    signal(SIGINT,sighandle);
+    signal(SIGCONT,sighandle);
+
+    while(1) {
+       sleep(2);
+	}
+    
 	return 0;
 }
 
 void sighandle(int sig) {
-    signal(sig, SIG_DFL);
-    printf("%d: signal - '%s' was recevie.\n",getpid(),strsignal(sig));
-    raise(sig);
-    if(sig == SIGTSTP)
+    printf("signal - '%s' was recevie.\n",strsignal(sig));
+    
+    if(sig == SIGTSTP){
         signal(SIGCONT,sighandle);
-    if(sig == SIGCONT)
-        signal(SIGTSTP,sighandle);
+    }
+
+    if(sig == SIGCONT){
+        signal(SIGSTOP,sighandle);
+        signal(SIGINT,sighandle);
+    }
+
+    signal(sig, SIG_DFL);
+    raise(sig);
 } 
