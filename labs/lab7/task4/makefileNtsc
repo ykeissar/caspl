@@ -1,0 +1,8 @@
+all: myNtsc
+
+myNtsc: myNtsc.c
+	gcc -m32 -g -Wall -fno-pie -o myNtsc myNtsc.c
+	
+.PHONY: clean
+clean:
+	rm -f myNtsc
