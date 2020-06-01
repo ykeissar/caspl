@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-
 
 typedef struct {
     char debug_mode; // 0 - off, 1 - on
@@ -26,7 +24,6 @@ void toggleDisplayMode(state* s);
 void memoryDisplay(state* s);
 void saveIntoFile(state* s);
 void memoryModify(state* s);
-void memoryDisplay100(state* s);
 void quit(state* s);
 
 struct fun_desc menu[] ={
@@ -38,7 +35,6 @@ struct fun_desc menu[] ={
     {"Memory Display",memoryDisplay},
     {"Save Into File",saveIntoFile},
     {"Memory Modify",memoryModify},
-    {"Memory Display 100",memoryDisplay100},
     {"Quit",quit},
     {NULL,NULL}
 };
@@ -125,12 +121,13 @@ void loadIntoMemory(state* s){
         fprintf(stderr,"Error: Load into memory - Seek file failed.\n");
         return;
     }
-    if(fread(s->mem_buf,s->unit_size,length,f) < length*(s->unit_size)){
+    if(fread(s->mem_buf,s->unit_size,length,f) < length{
         fprintf(stderr,"Error: Load into memory - Read file failed.\n");
         return;
     }
 
     printf("Loaded %d units into memory\n",length);
+    s->mem_count += (length*(s->unit_size));
     fclose(f);
 }
 
@@ -148,13 +145,13 @@ void toggleDisplayMode(state* s){
 void memoryDisplay(state* s){
     int u,addr,i;
     char* format;
-    char* p_char;
-    short* p_short;
-    int* p_int;
+    unsigned char* p_char;
+    unsigned short* p_short;
+    unsigned int* p_int;
 
     puts("Please enter <units> <adderss>");
     scanf("%d %x",&u,&addr);
-    addr = addr == 0 ? (int) s->mem_buf : addr;
+    addr = addr == 0 ? (unsigned int) s->mem_buf : addr;
     if(s->display_mode){
         format = "%x\n";
         puts("Hexadecimal\n===========");
@@ -166,19 +163,19 @@ void memoryDisplay(state* s){
     
     switch (s->unit_size){
     case 1:
-        p_char = (char*) addr;
+        p_char = (unsigned char*) addr;
         for(i = 0; i < u ;i++){
             printf(format,*(p_char+i));
         }
         break;
     case 2:
-        p_short = (short*)addr;
+        p_short = (unsigned short*)addr;
         for(i = 0; i < u ; i++){
             printf(format,*(p_short+i));
         }
         break;
     case 4:
-        p_int = (int*)addr;
+        p_int = (unsigned int*)addr;
         for(i = 0; i < u ;i++){
             printf(format,*(p_int+i));
         }
@@ -216,19 +213,19 @@ void saveIntoFile(state* s){
     switch(s->unit_size){
         case 1:
             p_char = (char*) srcAdder;
-            if((fwrite(p_char,s->unit_size,len,f)) < s->unit_size*len){
+            if((fwrite(p_char,s->unit_size,len,f)) < len){
                 fprintf(stderr,"Error: Save Into File - Writing to file\n");
             }
             break;
         case 2:
             p_short = (short*) srcAdder;
-            if((fwrite(p_short,s->unit_size,len,f)) < s->unit_size*len){
+            if((fwrite(p_short,s->unit_size,len,f)) < len){
                 fprintf(stderr,"Error: Save Into File - Writing to file\n");
             }
             break;
         case 4:
             p_int = (int*) srcAdder;
-            if((fwrite(p_int,s->unit_size,len,f)) < s->unit_size*len){
+            if((fwrite(p_int,s->unit_size,len,f)) < len){
                 fprintf(stderr,"Error: Save Into File - Writing to file\n");
             }
             break;
@@ -256,21 +253,12 @@ void memoryModify(state* s){
     memcpy((s->mem_buf)+loc,p_val,s->unit_size);
 }
 
-void memoryDisplay100(state* s){
-    int i;
-    for(i = 0;i<100;i++){
-        
-        printf("%x ",s->mem_buf[i]);
-        if(i % 10 == 9 )//9,19,29.39.
-            printf("\n");
-    }
-}
-
 state* initState(void){
     state* s  = (state*)malloc(sizeof(state));
     strncpy(s->file_name,"",sizeof(s->file_name));
     s->debug_mode = 0;
     s->unit_size = 1;
     s->display_mode = 0;
+    s->mem_count = 0;
     return s;
 }

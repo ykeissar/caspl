@@ -1,0 +1,28 @@
+2a -
+    2. _start precedes main.
+    3. _start is in 0x8048140.
+
+2b - 
+    displaying the entry point - 
+        1. Set file name 'deep_thought'.
+        2. entry point offset = 16      +   2    +     2    +     4     = 24 = 0x18
+                                e_ident + e_type + e_machine + e_version
+        3. loading into memory - location:0x18 length:4 (e_entry is address)
+        4. display memory - unit:4 address:0
+        5. shows 0x8048166.
+    
+    edit entry point -
+        1. load correct address -
+            a) .symtab offset - 0x1f4
+            b) symbol records = 16, * 8 = 128 = 0x80
+            c) record offset = 4
+            d) total - 0x278
+            - load with - location:278 len:4
+        2. save into file - source:0 target:18 length:4
+            
+    
+
+        
+
+
+        

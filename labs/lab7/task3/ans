@@ -1,97 +1,106 @@
 abc - 
-    main - start in 0x8048464, size of 175, section .text [13]
-    .text (section 13) - start in 0x80483b0, offset - 0x3b0
+    a)
+        1.
+            main - start in 0x8048464, size of 175, section .text [13]
+            .text (section 13) - start in 0x80483b0, offset - 0x3b0
+        2. 175
+        3. - set file name - ../abc
+           - load into memory - loc:464 len:175
+           - display memory - units:175 address:0
 
-    main offset - 0xB4 + 0x3B0 = 0x464
+    b) 55 - push ebp
+       89e5 - mov ebp,esp
+
+    main offset - 0xB4(0x8048464-0x80483b0) + 0x3B0 = 0x464
 
 main code - 
-55
-ffffff89
-ffffffe5
-ffffff83
-ffffffe4
-fffffff0
-ffffff83
-ffffffec
+55 - push ebp
+89 - 
+e5 - mov ebp, esp 
+83
+e4
+f0
+83
+ec
 30
-ffffff8b
+8b
 45
 c
-ffffff83
-ffffffc0
+83
+c0
 4
-ffffff8b
+8b
 0
-ffffff89
+89
 44
 24
 28
-ffffff8b
+8b
 45
 c
-ffffff83
-ffffffc0
+83
+c0
 8
-ffffff8b
+8b
 0
-ffffff89
+89
 4
 24
-ffffffe8
+e8
 13
-ffffffff
-ffffffff
-ffffffff
-ffffff89
+ff
+ff
+ff
+89
 44
 24
 24
-ffffff8b
+8b
 45
 c
-ffffff83
-ffffffc0
+83
+c0
 c
-ffffff8b
+8b
 0
-ffffff89
+89
 4
 24
-ffffffe8
-ffffffff
-fffffffe
-ffffffff
-ffffffff
-ffffff89
+e8
+ff
+fe
+ff
+ff
+89
 44
 24
 20
-ffffffba
-ffffffe0
-ffffff85
+ba
+e0
+85
 4
 8
-ffffff8b
+8b
 44
 24
 28
-ffffff89
+89
 54
 24
 4
-ffffff89
+89
 4
 24
-ffffffe8
-ffffffb6
-fffffffe
-ffffffff
-ffffffff
-ffffff89
+e8
+b6
+fe
+ff
+ff
+89
 44
 24
 1c
-ffffffc7
+c7
 44
 24
 18
@@ -99,25 +108,25 @@ ffffffc7
 0
 0
 0
-ffffffeb
+eb
 35
-ffffff8b
+8b
 44
 24
 1c
-ffffff89
+89
 4
 24
-ffffffe8
-ffffffac
-fffffffe
-ffffffff
-ffffffff
-ffffff88
+e8
+ac
+fe
+ff
+ff
+88
 44
 24
 2f
-ffffff8b
+8b
 44
 24
 18
@@ -128,60 +137,60 @@ ffffff8b
 72
 16
 f
-ffffffb6
+b6
 54
 24
 2f
-ffffffb8
-ffffffe2
-ffffff85
+b8
+e2
+85
 4
 8
-ffffff89
+89
 54
 24
 4
-ffffff89
+89
 4
 24
-ffffffe8
-ffffff98
-fffffffe
-ffffffff
-ffffffff
-ffffff83
+e8
+98
+fe
+ff
+ff
+83
 44
 24
 18
 1
-ffffff8b
+8b
 44
 24
 18
-ffffff8b
+8b
 54
 24
 20
-ffffff8b
+8b
 4c
 24
 24
-ffffff8d
+8d
 14
 11
 39
-ffffffd0
+d0
 72
-ffffffb8
-ffffffb8
+b8
+b8
 0
 0
 0
 0
-ffffffc9
-ffffffc3
+c9
+c3
 
-unit - 4
+in dword - 
 
 83e58955
 ec83f0e4
@@ -227,5 +236,3 @@ fffffe98
 b872d039
 b8
 c3c900
-
-

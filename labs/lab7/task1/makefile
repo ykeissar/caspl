@@ -1,11 +1,11 @@
 all: hexeditplus
 
-hexeditplus: task1.o
-	gcc -m32 -g -Wall -o hexeditplus task1.o
+hexeditplus: hexeditplus.o
+	gcc -m32 -g -Wall -o hexeditplus hexeditplus.o
 	rm *.o
 
-task1.o: task1.c
-	gcc -m32 -g -Wall -c -o task1.o task1.c
+hexeditplus.o: hexeditplus.c
+	gcc -m32 -g -Wall -c -o hexeditplus.o hexeditplus.c
 	
 .PHONY: clean
 clean:

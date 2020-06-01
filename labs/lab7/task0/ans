@@ -1,0 +1,8 @@
+a -
+    1. The entry point is in the elf header, its value is - 0x80482e0.
+    2. There are 33 sections, not including first NULL.
+    3. .text section is in size 0x1b8.
+    4. _start symbol appear in the file, in 0x080482e0.
+    5. main symbol appear in the file, in 0x08048388.
+    6. the offset from .text beginning to main is 0x08048388-0x080482e0 = 0xa8,
+       and .text offset is 0x2e0, so overall main function start is 0xa8+0x2e0 = 0x388

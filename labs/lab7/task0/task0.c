@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef struct {
   char debug_mode;
   char file_name[128];
@@ -25,6 +24,8 @@ void setFileName(state* s);
 void setUnitSize(state* s);
 void quit(state* s);
 
+state* initState(void);
+
 struct fun_desc menu[] ={
     {"Toggle Debug Mode",toggleDebugMode},
     {"Set File Name",setFileName},
@@ -33,12 +34,10 @@ struct fun_desc menu[] ={
     {NULL,NULL}
 };
 
-
-
 int main(int argc,char** argv){
     int i,choosen;
     unsigned int menuSize = sizeof menu / sizeof menu[0]-1;
-    state* s = (state*)malloc(sizeof(state));
+    state* s = initState();
     while(1){
         if(s->debug_mode)
             fprintf(stderr,"Unit size:%d\nFile name:%s\nMem count:%d\n",s->unit_size,s->file_name,s->mem_count);
@@ -96,4 +95,13 @@ void quit(state* s){
     if(s->debug_mode)
         fprintf(stderr,"quitting\n");
     exit(0);
+}
+
+state* initState(void){
+    state* s  = (state*)malloc(sizeof(state));
+    strncpy(s->file_name,"",sizeof(s->file_name));
+    s->debug_mode = 0;
+    s->unit_size = 1;
+    s->mem_count = 0;
+    return s;
 }
