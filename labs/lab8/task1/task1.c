@@ -37,12 +37,27 @@ struct fun_desc menu[] ={
 
 state* initState(void);
 
-Elf32_Shdr *get_shdr(Elf32_Ehdr *hdr);
-Elf32_Shdr *get_shdr_idx(Elf32_Ehdr *hdr, int idx);
+// ELF utils funcs
+Elf32_Shdr* get_shdr(Elf32_Ehdr* hdr){
+    return (Elf32_Shdr*)((int)hdr + hdr->e_shoff);
+}
 
-char *str_table(Elf32_Ehdr *hdr);
-char *get_shdr_name(Elf32_Ehdr *hdr,Elf32_Shdr* secHdr );
+Elf32_Shdr* get_shdr_idx(Elf32_Ehdr* hdr,int idx){
+    return &get_shdr(hdr)[idx];
+}
 
+char* str_table(Elf32_Ehdr* hdr){
+    if(hdr->e_shstrndx == SHN_UNDEF)
+        return NULL;
+    return (char*)hdr+get_shdr_idx(hdr,hdr->e_shstrndx)->sh_offset;
+}
+
+char* get_shdr_name(Elf32_Ehdr* hdr, Elf32_Shdr* secHdr){
+    char* strtab = str_table(hdr);
+    if(!strtab)
+        return NULL;
+    return strtab + (secHdr->sh_name);
+}
 
 int main(int argc,char** argv){
     int i,choosen;
@@ -141,7 +156,6 @@ void examineELFFile(state* s){
     printf("Number of Program header enteries: %d\n",header->e_phnum);
     printf("Size of each section header entry: %d\n",header->e_phentsize);
     printf("\n");
-
 }
 
 void quit(state* s){
@@ -152,31 +166,13 @@ void quit(state* s){
     exit(0);
 }
 
-Elf32_Shdr *get_shdr(Elf32_Ehdr *hdr){
-	return (Elf32_Shdr *)((int)hdr + hdr->e_shoff);
-}
- 
-Elf32_Shdr *get_shdr_idx(Elf32_Ehdr *hdr, int idx){
-	return &get_shdr(hdr)[idx];
-}
-
-char *str_table(Elf32_Ehdr *hdr){
-	if(hdr->e_shstrndx == SHN_UNDEF) return NULL;
-	return (char *)hdr + get_shdr_idx(hdr, hdr->e_shstrndx)->sh_offset;
-}
- 
-char *get_shdr_name(Elf32_Ehdr *hdr,Elf32_Shdr* secHdr){
-	char *strtab = str_table(hdr);
-	if(strtab == NULL) return NULL;
-	return strtab + (secHdr->sh_name);
-}
-
 void printSectionNames(state* s){
     int i;
     if(!s->map_start){
         fprintf(stderr,"Error: file is not defined.\n");
         return;
     }
+
     Elf32_Ehdr* hdr = (Elf32_Ehdr*) s->map_start;
     unsigned int scNum = hdr->e_shnum;
     Elf32_Shdr* secHdr;
@@ -185,15 +181,13 @@ void printSectionNames(state* s){
     if(s->debug_mode)
         printf("      Name offset");
     printf("\n");
+
     for(i = 0 ; i < scNum ; i++){
         secHdr = get_shdr_idx(hdr,i);
         printf("[%2d] %-20s %08x  %06x  %06x  %-8x",i,get_shdr_name(hdr,secHdr),secHdr->sh_addr,            secHdr->sh_offset,secHdr->sh_size,secHdr->sh_type);
-
         if(s->debug_mode)
             printf("  %06x",secHdr->sh_name);
         printf("\n");
-
     }
     printf("\n");
 }
-

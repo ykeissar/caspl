@@ -41,18 +41,47 @@ struct fun_desc menu[] ={
 
 state* initState(void);
 
-Elf32_Shdr *get_shdr(Elf32_Ehdr *hdr);
-Elf32_Shdr *get_shdr_idx(Elf32_Ehdr *hdr, int idx);
+// ELF utils funcs
+Elf32_Shdr* get_shdr(Elf32_Ehdr* hdr){
+    return (Elf32_Shdr*)((int)hdr + hdr->e_shoff);
+}
 
-char *str_table(Elf32_Ehdr *hdr);
-char *get_shdr_name(Elf32_Ehdr *hdr,Elf32_Shdr* secHdr );
+Elf32_Shdr* get_shdr_idx(Elf32_Ehdr* hdr,int idx){
+    return &get_shdr(hdr)[idx];
+}
 
-Elf32_Sym *get_sybm(Elf32_Ehdr* hdr,Elf32_Shdr *shdr);
-Elf32_Sym *get_symb_idx(Elf32_Ehdr* hdr,Elf32_Shdr *shdr, int idx);
+char *get_symb_name(Elf32_Ehdr *hdr,Elf32_Shdr* strtab,Elf32_Sym* symbol){
+	return (char*)hdr + strtab->sh_offset + symbol->st_name;
+}
 
-Elf32_Rel *get_rel(Elf32_Ehdr* hdr, Elf32_Shdr *shdr);
-Elf32_Rel *get_rel_idx(Elf32_Ehdr* hdr,Elf32_Shdr *shdr, int idx);
+Elf32_Sym *get_sybm(Elf32_Ehdr* hdr, Elf32_Shdr *shdr){
+	return (Elf32_Sym*)((int)hdr + shdr->sh_offset);
+}
+ 
+Elf32_Sym *get_symb_idx(Elf32_Ehdr* hdr,Elf32_Shdr *shdr, int idx){
+	return &get_sybm(hdr,shdr)[idx];
+}
 
+char* str_table(Elf32_Ehdr* hdr){
+    if(hdr->e_shstrndx == SHN_UNDEF)
+        return NULL;
+    return (char*)hdr+get_shdr_idx(hdr,hdr->e_shstrndx)->sh_offset;
+}
+
+char* get_shdr_name(Elf32_Ehdr* hdr, Elf32_Shdr* secHdr){
+    char* strtab = str_table(hdr);
+    if(!strtab)
+        return NULL;
+    return strtab + (secHdr->sh_name);
+}
+
+Elf32_Rel* get_rel(Elf32_Ehdr* hdr,Elf32_Shdr* shdr){
+    return (Elf32_Rel*)((int)hdr + shdr->sh_offset);
+}
+
+Elf32_Rel* get_rel_idx(Elf32_Ehdr* hdr,Elf32_Shdr* shdr,int idx){
+    return &get_rel(hdr,shdr)[idx];
+}
 int main(int argc,char** argv){
     int i,choosen;
     unsigned int menuSize = sizeof menu / sizeof menu[0]-1;
@@ -160,51 +189,13 @@ void quit(state* s){
     exit(0);
 }
 
-Elf32_Shdr *get_shdr(Elf32_Ehdr *hdr){
-	return (Elf32_Shdr *)((int)hdr + hdr->e_shoff);
-}
- 
-Elf32_Shdr *get_shdr_idx(Elf32_Ehdr *hdr, int idx){
-	return &get_shdr(hdr)[idx];
-}
-
-char *str_table(Elf32_Ehdr *hdr){
-	if(hdr->e_shstrndx == SHN_UNDEF) return NULL;
-	return (char *)hdr + get_shdr_idx(hdr, hdr->e_shstrndx)->sh_offset;
-}
- 
-char *get_shdr_name(Elf32_Ehdr *hdr,Elf32_Shdr* secHdr){
-	char *strtab = str_table(hdr);
-	if(strtab == NULL) return NULL;
-	return strtab + (secHdr->sh_name);
-}
-
-char *get_symb_name(Elf32_Ehdr *hdr,Elf32_Shdr* strtab,Elf32_Sym* symbol){
-	return (char*)hdr + strtab->sh_offset + symbol->st_name;
-}
-
-Elf32_Sym *get_sybm(Elf32_Ehdr* hdr, Elf32_Shdr *shdr){
-	return (Elf32_Sym*)((int)hdr + shdr->sh_offset);
-}
- 
-Elf32_Sym *get_symb_idx(Elf32_Ehdr* hdr,Elf32_Shdr *shdr, int idx){
-	return &get_sybm(hdr,shdr)[idx];
-}
-
-Elf32_Rel *get_rel(Elf32_Ehdr* hdr, Elf32_Shdr *shdr){
-	return (Elf32_Rel*)((int)hdr + shdr->sh_offset);
-}
-
-Elf32_Rel *get_rel_idx(Elf32_Ehdr* hdr,Elf32_Shdr *shdr, int idx){
-	return &get_rel(hdr,shdr)[idx];
-}
-
 void printSectionNames(state* s){
     int i;
     if(!s->map_start){
         fprintf(stderr,"Error: file is not defined.\n");
         return;
     }
+
     Elf32_Ehdr* hdr = (Elf32_Ehdr*) s->map_start;
     unsigned int scNum = hdr->e_shnum;
     Elf32_Shdr* secHdr;
@@ -213,10 +204,10 @@ void printSectionNames(state* s){
     if(s->debug_mode)
         printf("      Name offset");
     printf("\n");
+
     for(i = 0 ; i < scNum ; i++){
         secHdr = get_shdr_idx(hdr,i);
         printf("[%2d] %-20s %08x  %06x  %06x  %-8x",i,get_shdr_name(hdr,secHdr),secHdr->sh_addr,            secHdr->sh_offset,secHdr->sh_size,secHdr->sh_type);
-
         if(s->debug_mode)
             printf("  %06x",secHdr->sh_name);
         printf("\n");
@@ -226,7 +217,6 @@ void printSectionNames(state* s){
 
 void printSymbols(state* s){
     int i,j;
-    int symb_idx = -1;
     char foundSymbols = 0;
 
     if(!s->map_start){
@@ -236,24 +226,23 @@ void printSymbols(state* s){
 
     Elf32_Ehdr* hdr = (Elf32_Ehdr*) s->map_start;
     unsigned int scNum = hdr->e_shnum;
-    for(i = 0 ; i < scNum ;i++){
+    for(i = 0 ; i < scNum ; i++){
         if(get_shdr_idx(hdr,i)->sh_type == SHT_SYMTAB || get_shdr_idx(hdr,i)->sh_type == SHT_DYNSYM){
-            symb_idx = i;
-            foundSymbols = 1;               
+            foundSymbols = 1;
 
-            Elf32_Shdr* symbSec = get_shdr_idx(hdr,symb_idx);
-            int symNum = get_shdr_idx(hdr,symb_idx)->sh_size / get_shdr_idx(hdr,symb_idx)->sh_entsize;
-            
+            Elf32_Shdr* symbSec = get_shdr_idx(hdr,i);
+            int symNum = symbSec->sh_size/symbSec->sh_entsize;
+
             Elf32_Shdr* strtab = get_shdr_idx(hdr,symbSec->sh_link);
             Elf32_Sym* symbol;
             char* sec_name = "";
             int symb_sec_idx;
-
             printf("Symbol Table '%s' at offset 0x%x contains %d enteries:\n",get_shdr_name(hdr,symbSec),symbSec->sh_offset,(symbSec->sh_size)/(symbSec->sh_entsize));
             printf("[Nr] Value      Section index  Section name        Symbol name\n");
             for(j = 0 ; j < symNum ; j++){
                 symbol = get_symb_idx(hdr,symbSec,j);
                 symb_sec_idx = symbol->st_shndx;
+
                 if(symb_sec_idx<scNum){
                     sec_name = get_shdr_name(hdr,get_shdr_idx(hdr,symb_sec_idx));
                 }
@@ -272,38 +261,37 @@ void printSymbols(state* s){
 
 void relocationTables(state* s){
     int i,j,relSymbolIdx;
-    int rel_idx = -1;
 
     if(!s->map_start){
         fprintf(stderr,"Error: file is not defined.\n");
         return;
     }
 
+
     Elf32_Ehdr* hdr = (Elf32_Ehdr*) s->map_start;
+    unsigned int scNum = hdr->e_shnum;
     Elf32_Shdr* symbols;
     Elf32_Sym* symEnt;
-    unsigned int scNum = hdr->e_shnum;
 
-    for(i = 0 ; i < scNum ;i++){
+    for(i = 0 ; i < scNum ; i++){
         if(get_shdr_idx(hdr,i)->sh_type == SHT_DYNSYM){
             if(strcmp(get_shdr_name(hdr,get_shdr_idx(hdr,i)),".dynsym") == 0){
-                symbols = get_shdr_idx(hdr,i);        
+                symbols = get_shdr_idx(hdr,i);
+                break;
             }
         }
     }
 
-    for(i = 0 ; i < scNum ;i++){
+    for(i = 0 ; i < scNum ; i++){
         if(get_shdr_idx(hdr,i)->sh_type == SHT_REL){
-            rel_idx = i;
+            Elf32_Shdr* relSec = get_shdr_idx(hdr,i);
+            int relNum = relSec->sh_size/relSec->sh_entsize;
 
-            Elf32_Shdr* relSec = get_shdr_idx(hdr,rel_idx);
-            int symNum = get_shdr_idx(hdr,rel_idx)->sh_size / get_shdr_idx(hdr,rel_idx)->sh_entsize;
-            
             Elf32_Shdr* strtab = get_shdr_idx(hdr,symbols->sh_link);
             Elf32_Rel* rel;
-            printf("Relocation Table '%s' at offset 0x%x contains %d enteries:\n",get_shdr_name(hdr,relSec),relSec->sh_offset,(relSec->sh_size)/(relSec->sh_entsize));
+            printf("Relocation Table '%s' at offset 0x%x contains %d enteries:\n",get_shdr_name(hdr,relSec),relSec->sh_offset,relNum);
             printf("[Nr] Offset     Info      Type     Sym.Value  Sym.Name \n");
-            for(j = 0 ; j < symNum ; j++){
+            for(j = 0 ; j < relNum ; j++){
                 rel = get_rel_idx(hdr,relSec,j);
                 relSymbolIdx = ELF32_R_SYM(rel->r_info);
                 symEnt = get_symb_idx(hdr,symbols,relSymbolIdx);
@@ -313,3 +301,4 @@ void relocationTables(state* s){
         }
     }
 }
+
