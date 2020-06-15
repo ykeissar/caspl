@@ -1,0 +1,22 @@
+1. No, a file cannot infect itself because when you try to open it it does an error.
+   I guess its because an executable cannot be edited while execution.
+2. Another infection (virus code) is added at the end of the file (ELFexec2short).
+3. The virus messages are printed twice, because of the doubled code.
+4. After the 7th time posting the virus code, it won't run.
+    virus is size of 566 bytes, after adding it code 6 times to original
+    size of 660 its 4056, after adding the next one it will crash.
+
+   6 - size of 0xFD8 (4056)
+   7 - size of 0x120E (4622)
+   virus code size - 0x236 (566)
+   
+
+ELFexec2short sizes -
+0 - 0x294 (660)
+1 - 0x4CA (1226)
+2 - 0x700 (1792)
+3 - 0x936
+4 - 0xB6C
+5 - 0xDA2 
+6 - 0xFD8 
+7 - 0x120E
